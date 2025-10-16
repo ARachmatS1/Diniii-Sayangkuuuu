@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Perjalanan Waktu Bersama</title>
+
+    <!-- Fonts & global stylesheet -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Timeline-specific styles (kept local to this page) -->
+    <style>
+        /* timeline enhancements */
+        
+        .timeline-container {
+            max-width: 1100px;
+            margin: 28px auto;
+            padding: 0 18px
+        }
+        
+        .hero-note {
+            margin-bottom: 18px;
+            padding: 18px;
+            border-radius: 14px;
+            background: linear-gradient(90deg, #fff0f4, #fff7fb);
+            box-shadow: 0 12px 40px rgba(80, 20, 40, 0.04)
+        }
+        
+        .hero-note h2 {
+            font-family: 'Playfair Display', serif;
+            margin: 0 0 6px;
+            color: #8b2d4a
+        }
+        
+        .hero-note p {
+            margin: 0;
+            color: var(--muted)
+        }
+        
+        .timeline-vertical {
+            position: relative;
+            padding: 24px 12px
+        }
+        
+        .timeline-vertical::before {
+            content: "";
+            position: absolute;
+            left: 34px;
+            top: 8px;
+            bottom: 16px;
+            width: 4px;
+            background: linear-gradient(180deg, #ffd6e8, #ffeff6);
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(255, 120, 160, 0.06);
+        }
+        
+        .tl-item {
+            position: relative;
+            margin: 18px 0 28px;
+            padding-left: 70px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start
+        }
+        
+        .tl-bullet {
+            position: absolute;
+            left: 18px;
+            top: 6px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(180deg, #ff8fb6, #ff6b9a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(255, 100, 150, 0.12);
+            transform: scale(1);
+            transition: transform .2s;
+        }
+        
+        .tl-item:hover .tl-bullet {
+            transform: scale(1.08)
+        }
+        
+        .tl-date {
+            font-weight: 800;
+            color: #b23a5a;
+            min-width: 110px
+        }
+        
+        .tl-card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 248, 250, 0.98));
+            padding: 14px;
+            border-radius: 12px;
+            box-shadow: 0 14px 40px rgba(30, 8, 22, 0.06);
+            flex: 1
+        }
+        
+        .tl-card h3 {
+            margin: 0 0 6px;
+            font-family: 'Playfair Display', serif;
+            color: #5a2230
+        }
+        
+        .tl-card p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.6
+        }
+        
+        .tl-card .small {
+            display: block;
+            margin-top: 8px;
+            color: #8b6a73;
+            font-size: 13px
+        }
+        /* thumbnail */
+        
+        .tl-thumb {
+            width: 96px;
+            height: 72px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+            box-shadow: 0 12px 28px rgba(40, 8, 20, 0.06)
+        }
+        
+        .tl-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block
+        }
+        /* romantic quote between blocks */
+        
+        .love-quote {
+            margin: 10px 70px 20px;
+            color: #7d3a4a;
+            font-style: italic;
+            background: linear-gradient(90deg, rgba(255, 240, 245, 0.6), rgba(255, 250, 252, 0.6));
+            padding: 12px;
+            border-radius: 10px;
+            border-left: 4px solid rgba(255, 107, 154, 0.5)
+        }
+        /* final 'soon' card special */
+        
+        .tl-soon .tl-card {
+            background: linear-gradient(90deg, #fff7fb, #fff1f6);
+            border: 1px dashed rgba(200, 120, 150, 0.14);
+            text-align: center;
+            color: #923a53
+        }
+        /* responsiveness */
+        
+        @media (max-width: 860px) {
+            .timeline-vertical::before {
+                left: 20px;
+            }
+            .tl-item {
+                flex-direction: column;
+                gap: 0;
+                align-items: flex-start;
+                padding-left: 58px;
+            }
+            .tl-thumb {
+                display: block;
+                margin-bottom: 12px;
+            }
+            .tl-date {
+                margin-bottom: 8px;
+                min-width: auto;
+                font-size: 13px;
+            }
+            .tl-card {
+                min-width: 0;
+                width: 100%;
+            }
+            .tl-card p {
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+                /* untuk browser lama */
+            }
+            .love-quote {
+                margin-left: 58px;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+
+<body data-page="timeline" data-song="assets/music/timeline.mp3" class="romantic">
+    <header class="nav">
+        <div class="brand">Dini🌹</div>
+        <nav class="navlinks">
+            <a href="index.html">Home</a>
+            <a href="timeline.html" class="active">Memory</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="surprise.html">Surprise</a>
+            <a href="guestbook.html">Closing</a>
+        </nav>
+        <div class="right-controls">
+            <div id="count-sm-2" class="count-sm">-- hari --:--:--</div>
+            <button id="playBtn2" class="btn-small">▶️ Play</button>
+            <button id="navToggle2" class="nav-toggle" aria-label="toggle">≡</button>
+        </div>
+    </header>
+
+    <main class="timeline-container">
+        <!-- short intro note -->
+        <div class="hero-note">
+            <h2>Perjalanan Waktu Bersama, Sampai Hari Istimewamu</h2>
+            <p>“Hari ini bukan hanya tentang ulang tahunmu, tapi juga tentang semua waktu yang sudah membawaku kepadamu. Aku ingin menuliskan jejak kecil perjalanan kita, dari pertama aku hadir dikehidupan kamu”</p>
+        </div>
+
+        <section id="gallery" class="timeline-vertical" aria-label="Timeline hubungan Dini dan Rachmat">
+            <!-- TL ITEM 1 -->
+            <article class="tl-item">
+                <div class="tl-bullet">1</div>
+                <div class="tl-thumb"><img src="assets/images/foto1.jpg" alt="3 Mei 2025"></div>
+                <div class="tl-card">
+                    <div class="tl-date">3 Mei 2025</div>
+                    <h3>Awal Kita Kenal</h3>
+                    <p>Kita bertemu dengan ketidaksengajaan. Tidak ada niat mencari pasangan, hanya dua orang yang ngobrol dan merasa pas. Sejak chat pertama aku merasakan frekuensi yang sama, dan perlahan menunggumu jadi sesuatu yang dinanti bukan hanya
+                        untuk mengisi waktu, tapi karena setiap pesanmu terasa seperti pelukan kecil untuk hari-hariku 💌💫</p>
+                    <span class="small">Kenangan: obrolan pertama yang panjang sampai lupa waktu 🕰️💖</span>
+                </div>
+            </article>
+
+            <div class="love-quote">"Dalam cerita yang kamu ucap, aku sangat ingin mendapatkan ketulusan kamu."</div>
+
+            <!-- TL ITEM 2 -->
+            <article class="tl-item">
+                <div class="tl-bullet">2</div>
+                <div class="tl-thumb"><img src="assets/images/foto2.jpg" alt="17 Juni 2025"></div>
+                <div class="tl-card">
+                    <div class="tl-date">17 Juni 2025</div>
+                    <h3>First Date - ITS</h3>
+                    <p>Hari itu aku datang ke rumahmu, menjemputmu dengan hati berdebar. Kita melangkah ke ITS, tempat di mana aku memberimu mawar pink sebagai tanda betapa aku mencintaimu. Di sana aku tak hanya mengajakmu jadi pacar, tapi meminta kamu menjadi
+                        pasangan selamanya 💍. Setelah itu kita lanjut makan di Gacoan, menutup hari yang jadi awal cerita pertemuan secara langsung indah kita 🌹🌸💓</p>
+                    <span class="small">Kenangan: pertama kali aku bertemu dengan kamu, dan ijin ke mama kamu👩</span>
+                </div>
+            </article>
+
+            <!-- TL ITEM 3 -->
+            <article class="tl-item">
+                <div class="tl-bullet">3</div>
+                <div class="tl-thumb"><img src="assets/images/foto3.jpg" alt="23 Juni 2025"></div>
+                <div class="tl-card">
+                    <div class="tl-date">23 Juni 2025</div>
+                    <h3>Pertemuan Kedua - Main PS</h3>
+                    <p>Game controller di tangan, senyummu jadi cheat code yang tak ada tandingnya. Malam itu kita kalah menang, tapi tak ada yang kalah soal rasa karena sekecil apapun momen bersama kamu terasa mewah🎮💖
+                    </p>
+                    <span class="small">Kenangan: aku bisa melihat kamu bahagia secara lepas🥰❤️.</span>
+                </div>
+            </article>
+
+            <!-- TL ITEM 4 -->
+            <article class="tl-item">
+                <div class="tl-bullet">4</div>
+                <div class="tl-thumb"><img src="assets/images/foto4.jpg" alt="5 Juli 2025"></div>
+                <div class="tl-card">
+                    <div class="tl-date">5 Juli 2025</div>
+                    <h3>After Kemah Kerja</h3>
+                    <p>Setelah seminggu kita terpisah karena kemker, kita akhirnya ketemu lagi. Kita mam sate bareng, dan satu senyumanmu sudah cukup buat menambal rindu yang menumpuk. Di tengah obrolan sederhana itu aku sadar: rindu ternyata manis kalau
+                        dibayar dengan hadirmu🏞️🍢🥰.</p>
+                    <span class="small">Catatan: rindu itu mahal, tapi hadirmu selalu jadi bayaran terindah❤️❤️</span>
+                </div>
+            </article>
+
+            <div class="love-quote">"Pertemuan pertama jadi cerita, pertemuan kedua jadi tawa, pertemuan setelah rindu jadi rasa yang paling manis. Dan aku tau, pertemuan berikutnya selalu akan lebih indah."</div>
+
+            <!-- TL ITEM 5 -->
+            <article class="tl-item">
+                <div class="tl-bullet">5</div>
+                <div class="tl-thumb"><img src="assets/images/foto5.jpg" alt="12 Juli 2025"></div>
+                <div class="tl-card">
+                    <div class="tl-date">12 Juli 2025</div>
+                    <h3>Kebun Binatang Date</h3>
+                    <p>Dari pagi hingga sore kita berjalan, menatap binatang satu per satu sambil berbagi cerita kecil yang tak pernah habis. Di sela langkah itu, aku semakin jatuh pada caramu memandang dunia begitu lembut, penuh rasa ingin tahu, dan selalu
+                        membuatku ikut terpukau. Bersamamu, bahkan kebun binatang pun terasa seperti taman cinta yang hanya kita miliki berdua 🌿❤️</p>
+                    <span class="small">Kenangan: pertama kali kita keluar dari pagi hari sampai sore, menikmati waktu penuh cerita dan tawa, seakan dunia cuma milik kita berdua 🕰️💖</span>
+                </div>
+            </article>
+
+            <!-- TL ITEM 6 -->
+            <article class="tl-item">
+                <div class="tl-bullet">6</div>
+                <div class="tl-thumb"><img src="assets/images/foto6.jpg" alt="14 Juli 2025"></div>
+                <div class="tl-card">
+                    <div class="tl-date">14 Juli 2025</div>
+                    <h3>Tunjungan Plaza - Jaketku untukmu</h3>
+                    <p>Aku memberimu jaket bukan sekadar untuk menahan dingin, tapi sebagai jejak kecil bahwa aku selalu ada di dekatmu. Dalam hatiku aku berbisik: jika suatu hari kamu merindukanku, biarlah jaket itu memelukmu, jadi pengingat bahwa meski
+                        aku jauh, cintaku selalu di sisimu 🧥🥰</p>
+                    <span class="small">Catatan: setiap kali kamu pakai jaket itu, bayangkan aku yang lagi meluk kamu ❤️</span>
+                </div>
+            </article>
+
+            <!-- TL ITEM 7 -->
+            <article class="tl-item">
+                <div class="tl-bullet">7</div>
+                <div class="tl-thumb"><img src="assets/images/foto7.jpg" alt="15 Juli 2025"></div>
+                <div class="tl-card">
+                    <div class="tl-date">15 Juli 2025</div>
+                    <h3>CW Coffee Date - Sebelum Madiun</h3>
+                    <p>Sore itu kita bertemu di sebuah kafe, duduk bersebelahan dengan jarak yang nyaris tak ada. Hangatnya pelukanmu menenangkan, seakan ingin menahan waktu agar tak cepat berlari. Di antara obrolan kecil kita, aku hanya bisa memeluk erat,
+                        karena sebentar lagi aku harus berangkat ke Madiun untuk magang. Hari itu bukan sekadar pertemuan, tapi bekal rindu sebelum kita belajar menjalani jarak ☕✈️
+                    </p>
+                    <span class="small">Kenangan: pelukanmu sore itu jadi penguat yang kubawa sampai jauh ke madiun 🥰</span>
+                </div>
+            </article>
+
+            <div class="love-quote">"Dalam jarak, cinta memang diuji tapi kita menjawabnya dengan rindu yang tumbuh menjadi kekuatan. Dan pada akhirnya, kita berhasil membuktikan bahwa hati yang saling memilih tak pernah bisa dipisahkan oleh jarak."</div>
+
+            <!-- TL ITEM 8 -->
+            <article class="tl-item">
+                <div class="tl-bullet">8</div>
+                <div class="tl-thumb"><img src="assets/images/foto8.JPG" alt="18 Agustus 2025"></div>
+                <div class="tl-card">
+                    <div class="tl-date">18 Agustus 2025</div>
+                    <h3>Studio Foto dan Kodam</h3>
+                    <p>Setelah sebulan di Madiun, akhirnya aku kembali ke Surabaya dan menukar semua rindu yang menumpuk dengan hadirmu. Kita rayakan pertemuan itu dengan foto di studio, mengabadikan senyum dan cinta yang tak pernah pudar. Lalu kita jajan
+                        di Kodam, sederhana tapi penuh tawa. Dan sebagai penutup hari, pelukan hangatmu jadi bukti bahwa semua rintangan dan jarak yang kita lewati tak pernah sia-sia, karena ujungnya selalu kembali pada kita berdua 📸❤️</p>
+                    <span class="small">Kenangan: foto yang kini sering kubuka saat rindu 🖼️💖</span>
+                </div>
+            </article>
+
+            <!-- TL ITEM 9 -->
+            <article class="tl-item">
+                <div class="tl-bullet">9</div>
+                <div class="tl-thumb"><img src="assets/images/foto9.JPG" alt="24 Agustus 2025"></div>
+                <div class="tl-card">
+                    <div class="tl-date">24 Agustus 2025</div>
+                    <h3>Diundang Mama Kamu - Awal Keluarga</h3>
+                    <p>Setelah pertemuan itu, untuk pertama kalinya aku diundang langsung oleh mama kamu ke rumah. Hari itu kita benar-benar menghabiskan waktu berdua, sederhana tapi terasa begitu berharga. Dari sana aku mulai merasakan, sedikit demi sedikit
+                        kepercayaan keluargamu tumbuh untukku. Bukan hanya tentang kita lagi, tapi tentang langkah kecil menuju awal keluarga yang kita impikan bersama ❤️</p>
+                    <span class="small">Catatan: cinta kita tak cuma soal kita berdua, tapi juga tentang membangun kepercayaan dan keluarga 🏡💖</span>
+                </div>
+            </article>
+
+            <!-- TL ITEM 10 -->
+            <article class="tl-item">
+                <div class="tl-bullet">10</div>
+                <div class="tl-thumb"><img src="assets/images/foto10.JPG" alt="6 September 2025"></div>
+                <div class="tl-card">
+                    <div class="tl-date">6 September 2025</div>
+                    <h3>Belanja Laptop - Rasa Lega Kamu</h3>
+                    <p>Aku kembali merasakan kepercayaan dari mama kamu, kali ini kita berdua memilih laptop untuk adikmu. Setelah itu, kita lanjut ke Gacoan part 2, sambil menutup hari denganmu bercerita tentang semua yang selama ini kamu pendam sendiri.
+                        Aku mendengarkan tanpa menghakimi, memeluk setiap cerita dan perasaanmu. Di sini aku tetap untukmu, apapun keadaannya, dan aku bersyukur kamu percaya padaku sepenuhnya 💻❤️</p>
+                    <span class="small">Kenangan: malam itu aku belajar banyak tentangmu, dan aku menerima semua tentang kamu. aku tidak akan pernah meninggalkan kamu sayang 🌹💖</span>
+                </div>
+            </article>
+
+            <!-- TL ITEM 11 -->
+            <article class="tl-item">
+                <div class="tl-bullet">11</div>
+                <div class="tl-thumb"><img src="assets/images/foto11.jpg" alt="10 September 2025"></div>
+                <div class="tl-card">
+                    <div class="tl-date">10 September 2025</div>
+                    <h3>Pertemuan Tak Terduga - Saat Ayahmu Sakit</h3>
+                    <p>Hari itu kita sama-sama pergi ke rumah sakit untuk menjenguk ayahmu. Aku melihat betapa kamu butuh seseorang di sisimu, dan aku tahu aku harus ada di sana. Mencintaimu bukan hanya tentang kita, tapi juga tentang menjaga dan peduli
+                        pada keluargamu. Terima kasih sudah mempercayakan momen berat ini padaku, dan membiarkanku tetap di sampingmu saat semuanya terasa sulit 🏥❤️</p>
+                    <span class="small">Catatan: aku belajar bahwa mencintaimu juga berarti menjaga yang kamu cintai. aku di sini, selalu untukmu 💖</span>
+                </div>
+            </article>
+
+            <!-- TL ITEM 12 -->
+            <article class="tl-item">
+                <div class="tl-bullet">12</div>
+                <div class="tl-thumb"><img src="assets/images/foto12.jpg" alt="19 September 2025"></div>
+                <div class="tl-card">
+                    <div class="tl-date">19 September 2025</div>
+                    <h3>Study Date - Belajar Bareng</h3>
+                    <p>Hari itu kita bertemu untuk belajar bersama, tapi aku sadar, momen itu lebih dari sekadar buku dan catatan. Aku melihat bahwa cinta dan pendidikan bisa berjalan beriringan, dan hubungan kita bukan hanya untuk saat ini, tapi untuk selamanya.
+                        Bersamamu, aku ingin mempersiapkan masa depan yang cerah, dimulai dari langkah-langkah kecil hari ini, sambil menumbuhkan rasa yang tak lekang oleh waktu 📚🌟</p>
+                    <span class="small">Kenangan: buku di meja, tanganmu di dekatku, hati ini tahu kita sedang menyiapkan masa depan bersama 📖💖</span>
+                </div>
+            </article>
+
+            <div class="love-quote">“Tanpa rencana, tanpa janji… tapi setiap pertemuan terasa seperti takdir yang sengaja diatur biar kita saling menemukan.”</div>
+
+            <!-- TL ITEM 13 -->
+            <article class="tl-item">
+                <div class="tl-bullet">13</div>
+                <div class="tl-thumb"><img src="assets/images/foto13.jpg" alt="27 September 2025"></div>
+                <div class="tl-card">
+                    <div class="tl-date">27 September 2025</div>
+                    <h3>Nonton - Mie Ayam & Peyuk</h3>
+                    <p>Malam itu kita menonton bersama, lalu berjalan pulang sambil saling menggenggam tangan. Mie ayam dan peyuk menjadi saksi manisnya momen kita bisikan kata “sayang” yang lembut dan hangatnya pelukanmu membuatku yakin, aku tak ingin melepasmu
+                        dari sisiku. Setelah beberapa kejadian tak terduga yang membuat hari-hari kita penuh warna, akhirnya kita berhasil mewujudkan wistlish kita, menutup malam dengan tawa, kehangatan, dan rasa syukur karena setiap momen, sekecil apapun,
+                        terasa begitu berharga saat bersamamu 🎬❤️</p>
+                    <span class="small">Kenangan: genggaman tanganmu dan bisikan kata “sayang” di malam itu membuat hatiku hangat aku tak ingin melepasmu 💖</span>
+                </div>
+            </article>
+
+            <!-- TL ITEM 14 -->
+            <article class="tl-item">
+                <div class="tl-bullet">14</div>
+                <div class="tl-thumb"><img src="assets/images/foto14.jpg" alt="27 September 2025"></div>
+                <div class="tl-card">
+                    <div class="tl-date">4 Oktober 2025</div>
+                    <h3>Danau Unesa</h3>
+                    <p>Sore itu aku menjemputmu dari sekolah, lalu setelah izin ke mama kamu, kita pergi ke Unesa. Di sana kita menghabiskan waktu melihat danau sambil mengenang masa-masa maba. Pulangnya, kita saling mengungkapkan rasa sayang dan cinta yang
+                        selama ini tersimpan. Di momen sederhana di rumahmu, aku merasakan kedekatan yang lebih dalam kehangatan, rasa aman, dan kepastian. Aku benar-benar mencintaimu dari hati, sayang… kamu milikku, selamanya 🏫❤️</p>
+                    <span class="small">Catatan: kamu memang milikku sepenuhnya dan selamanya, kita sudah menyatu sayang 🥰💖</span>
+                </div>
+            </article>
+
+            <!-- TL ITEM 15 -->
+            <article class="tl-item">
+                <div class="tl-bullet">15</div>
+                <div class="tl-thumb"><img src="assets/images/foto16.jpg" alt="27 September 2025"></div>
+                <div class="tl-card">
+                    <div class="tl-date">2 Oktober 2025</div>
+                    <h3>Bengkel & Momoyo Date</h3>
+                    <p>Kita ke bengkel bareng, nunggu motor yang lagi diservis. Setelah itu kita pulang ke rumahmu dan makan bareng sama tetangga, ayah, dan mama kamu. Rasanya hangat banget bukan cuma perut yang kenyang, tapi hati juga terasa penuh. Lalu
+                        kita lanjut kamu ambil uang, terus ke Momoyo beli es krim kesukaanmu, dan sempat cuci motor juga bareng-bareng. Sore itu ditutup dengan kita kembali ke rumahmu, denger cerita orang tua kamu tentang masa-masa mereka nikah dulu.
+                        Di situ aku diam-diam merasa: aku sudah benar-benar diterima di keluargamu, sayang ❤️🤍🌹</p>
+                    <span class="small">Catatan: semua momen itu buat aku yakin, aku ga cuma dicintai sama kamu, tapi juga benar-benar diterima di keluarga 🤍</span>
+                </div>
+            </article>
+
+            <!-- TL ITEM 16 -->
+            <article class="tl-item">
+                <div class="tl-bullet">16</div>
+                <div class="tl-thumb"><img src="assets/images/foto17.jpg" alt="27 September 2025"></div>
+                <div class="tl-card">
+                    <div class="tl-date">10 Oktober 2025</div>
+                    <h3>Simulasi Lamaran</h3>
+                    <p>Hari itu aku datang ke rumahmu, sesederhana itu. Kamu jadi penjaga buku tamu, aku di sampingmu, dan kita foto bareng. Cuma satu story, tapi tiba-tiba semua orang ngira kita lamaran. Aku senyum dan di dalam hati… rasanya hangat banget.
+                        Mungkin karena di balik itu, ada harapan kecil yang diam-diam tumbuh bahwa suatu hari nanti, foto itu bukan cuma candaan, tapi kenyataan yang kita jalani bersama 💍❤️</p>
+                    <span class="small">Catatan: semoga suatu hari nanti, momen ini benar-benar jadi nyata, dan kita bisa jalani semuanya bersama, sayang 🥰💖</span>
+                </div>
+            </article>
+
+            <!-- TL ITEM 16 (extra longer romantic entry) -->
+            <article class="tl-item">
+                <div class="tl-bullet">17</div>
+                <div class="tl-thumb"><img src="assets/images/foto15.jpg" alt="Beberapa Momen Lain"></div>
+                <div class="tl-card">
+                    <div class="tl-date">Beberapa Hari Lain</div>
+                    <h3>Rangkaian Detik yang Membentuk Kita</h3>
+                    <p>Ada ribuan detik yang mungkin tak tertulis di sini: pesan singkat “sudah makan?”, "sayang jangan lupa sholat", "hati-hati dijalan sayang", dan perhatianmu yang sederhana tapi tulus. Semua hal kecil itu tak kalah penting dari kenangan
+                        diatas, karena cinta kita sesungguhnya hidup di momen-momen kecil yang sering tak terlihat di setiap perhatian dan kehangatan yang kau berikan, aku merasa utuh dan dicintai 🌹💖</p>
+                    <span class="small">Catatan: terima kasih sudah menjadi tempat pulangku dan aku akan selalu jadi tempat pulang yang nyaman buat kamu. pulang ke aku terus ya sayang 🏡❤️</span>
+                </div>
+            </article>
+
+            <!-- SOON card -->
+            <article class="tl-item tl-soon">
+                <div class="tl-bullet">♡</div>
+                <div class="tl-card">
+                    <div class="tl-date">Soon</div>
+                    <h3>Kisah Berikutnya</h3>
+                    <p>Bab ini baru saja kita mulai menulis. Masih banyak halaman kosong yang menunggu tawa, rencana, dan mimpi kita. Aku ingin mengisinya bersamamu, satu langkah kecil setiap hari, hingga setiap halaman dipenuhi cinta, kebahagiaan, dan kenangan
+                        yang tak akan pernah pudar. Bersamamu, aku yakin kisah kita akan indah selamanya ❤️📖</p>
+                    <span class="small">Pesan: Yuk sayang kita wujudkan semua impian indah kita🤍🌹</span>
+                </div>
+            </article>
+        </section>
+    </main>
+
+
+    <!-- audio element + script -->
+    <audio id="bgm" preload="auto"></audio>
+    <script src="script.js"></script>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox" aria-hidden="true">
+        <button id="lbClose" class="mutebtn">✖</button>
+        <img id="lbImg" src="" alt="">
+        <div id="lbCap" class="muted"></div>
+    </div>
+    <footer class="foot">
+        Made with ❤️ for Dini | <a href="index.html">Kembali ke Beranda</a>
+    </footer>
+
+</body>
+
+</html>

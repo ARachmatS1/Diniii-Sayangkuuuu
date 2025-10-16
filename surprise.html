@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Surprise untuk Dini 💖</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Fonts & global stylesheet -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+         :root {
+            --card-max-width: 800px;
+            --card-height: 600px;
+            /* default */
+            --card-radius: 18px;
+            --map-height: 600px;
+            /* default map height jika mau override */
+        }
+        /* BASE CARD: pakai variabel per-card jika ada */
+        
+        .card {
+            width: var(--card-w, 100%);
+            /* default = full width (max-width caps it) */
+            max-width: var(--card-max-width);
+            height: var(--card-h, var(--card-height));
+            /* per-card height atau default */
+            box-sizing: border-box;
+            border-radius: var(--card-radius);
+            padding: 1.6rem 1.8rem;
+            background: rgba(255, 255, 255, 0.88);
+            display: flex;
+            flex-direction: column;
+            gap: .8rem;
+            overflow: hidden;
+        }
+        /* khusus untuk lab (canvas mengisi sisa) */
+        
+        .lab-card {
+            /* kalau mau lab card auto-height berdasarkan isi: pakai min-height bukan height */
+            --card-h: auto;
+            min-height: calc(var(--card-height) + 200px);
+            display: flex;
+            flex-direction: column;
+        }
+        /* contoh override tiap kartu: */
+        
+        .card--poem {
+            /* kotak puisi: lebih pendek */
+            --card-w: 480px;
+            /* lebar spesifik (centering nanti) */
+            --card-h: 4800px;
+            /* tinggi pas untuk puisi */
+        }
+        
+        .card--dept {
+            /* gabungan jurusan: kotak sedang */
+            --card-w: 520px;
+            --card-h: 260px;
+        }
+        
+        .card--map {
+            /* kartu peta: pakai variabel map-height atau tinggi khusus */
+            --card-w: 100%;
+            /* full width */
+            --card-h: var(--map-height);
+            /* pakai tinggi map khusus */
+        }
+        /* pastikan container utama tetap center */
+        
+        main.page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+        /* jika kamu ingin kartu yang pakai fixed width tetap centered */
+        
+        .card {
+            margin: 0 auto;
+        }
+        /* Leaflet container fill */
+        
+        .map-container,
+        #map,
+        .leaflet-container {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        /* contoh responsive tweak */
+        
+        @media (max-width: 720px) {
+            .card--poem,
+            .card--dept {
+                --card-w: 92%;
+                /* jadi responsif */
+            }
+            .card--map {
+                --card-h: 320px;
+            }
+            /* peta lebih pendek di hp */
+        }
+        /* === LAB CARD: canvas mengisi ruang secara fleksibel === */
+        
+        .lab-card {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            max-width: var(--card-max-width);
+            min-height: calc(var(--card-height) + 200px);
+            /* tetap lebih tinggi */
+            height: auto;
+            padding: 1.6rem 1.8rem;
+            overflow: hidden;
+        }
+        
+        .lab-card>p {
+            margin: 0;
+        }
+        
+        canvas#chemCanvas {
+            width: 100%;
+            flex: 1 1 auto;
+            min-height: 180px;
+            /* batas bawah agar tidak terlalu kecil */
+            border-radius: 10px;
+            display: block;
+            background: transparent;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            margin-bottom: 0.6rem;
+        }
+        
+        .tube-container {
+            margin-top: 0.6rem;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .map-container {
+            width: 100%;
+            height: var(--map-height);
+            /* <-- pakai variabel baru */
+            border-radius: 14px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 6px 26px rgba(220, 120, 180, 0.12);
+            background: #faf7fb;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        #map,
+        .leaflet-container {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 200px;
+            display: block;
+        }
+        /* ====== GLOBAL ROMANTIC THEME ====== */
+        
+        body.romantic {
+            background: linear-gradient(to bottom right, #ffe0ec, #fff4fa, #f9e0ff);
+            color: #4a004e;
+        }
+        
+        main.page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            padding: 2rem 1rem;
+        }
+        
+        footer.foot {
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.95rem;
+            color: #a7448b;
+            background: linear-gradient(to right, #ffe6f0, #fff0fa);
+            box-shadow: 0 -3px 10px rgba(255, 150, 200, 0.1);
+            margin-top: 2rem;
+        }
+        /* ====== CARD BASE STYLE ====== */
+        
+        .lab-card {
+            min-height: calc(var(--card-height) + 200px);
+            height: auto;
+        }
+        
+        .card,
+        .lab-card {
+            width: 100%;
+            max-width: var(--card-max-width);
+            height: var(--card-height);
+            box-sizing: border-box;
+            border-radius: var(--card-radius);
+            padding: 1.6rem 1.8rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 0.8rem;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(6px);
+            box-shadow: 0 10px 30px var(--shadow);
+            transition: transform .25s ease, box-shadow .25s ease;
+            overflow: hidden;
+            animation: fadeUp 1s ease;
+        }
+        
+        .card:hover,
+        .lab-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 45px rgba(200, 80, 160, 0.12);
+        }
+        
+        .card h3,
+        .lab-card h3 {
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            font-family: 'Playfair Display', serif;
+            color: #5a004e;
+        }
+        
+        .divider {
+            width: 72px;
+            height: 4px;
+            border-radius: 6px;
+            margin: 0.4rem 0 0.8rem 0;
+            background: linear-gradient(to right, var(--accent-1), var(--accent-2));
+        }
+        
+        .poem {
+            font-style: italic;
+            color: #663366;
+            line-height: 1.5;
+        }
+        /* ====== LAB CARD (CHEMISTRY LOVE EDITION) ====== */
+        
+        .tube-container {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 2rem;
+            position: relative;
+            perspective: 1000px;
+        }
+        
+        .test-tube {
+            position: relative;
+            width: 70px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 2.5px solid rgba(255, 200, 220, 0.5);
+            border-radius: 0 0 35px 35px;
+            overflow: hidden;
+            box-shadow: 0 6px 25px rgba(255, 180, 200, 0.3);
+            backdrop-filter: blur(6px);
+            transform: rotateX(8deg);
+            cursor: pointer;
+            animation: pulseTube 5s infinite ease-in-out;
+        }
+        
+        @keyframes pulseTube {
+            0%,
+            100% {
+                box-shadow: 0 0 25px rgba(255, 160, 190, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 50px rgba(255, 190, 210, 0.8);
+            }
+        }
+        /* Cairan bereaksi (bergelombang) */
+        
+        .liquid {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(180deg, rgba(255, 100, 150, 0.9), rgba(255, 220, 240, 0.8));
+            border-top-left-radius: 50%;
+            border-top-right-radius: 50%;
+            animation: liquidReact 4s ease-in-out infinite;
+        }
+        
+        @keyframes liquidReact {
+            0%,
+            100% {
+                height: 60%;
+                filter: hue-rotate(0deg);
+            }
+            50% {
+                height: 70%;
+                filter: hue-rotate(30deg);
+            }
+        }
+        /* Gelembung gas cinta */
+        
+        .bubble {
+            position: absolute;
+            bottom: 15%;
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle, #fff 0%, #ff8fb1 90%);
+            border-radius: 50%;
+            opacity: 0.9;
+            animation: rise 4s infinite ease-in;
+        }
+        
+        .bubble:nth-child(2) {
+            left: 15px;
+            animation-delay: 0.5s;
+        }
+        
+        .bubble:nth-child(3) {
+            left: 30px;
+            animation-delay: 1s;
+        }
+        
+        .bubble:nth-child(4) {
+            left: 45px;
+            animation-delay: 1.5s;
+        }
+        
+        @keyframes rise {
+            0% {
+                transform: translateY(0) scale(0.8);
+                opacity: 0.8;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-160px) scale(1.4);
+                opacity: 0;
+            }
+        }
+        /* Uap cinta naik dari reaksi */
+        
+        .test-tube::after {
+            content: "";
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            width: 120%;
+            height: 180%;
+            transform: translateX(-50%);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 80%);
+            opacity: 0;
+            animation: vaporRise 6s infinite ease-in-out;
+        }
+        
+        @keyframes vaporRise {
+            0%,
+            100% {
+                opacity: 0;
+                transform: translate(-50%, 0);
+            }
+            50% {
+                opacity: 0.4;
+                transform: translate(-50%, -20px);
+            }
+        }
+        /* Percikan ion cinta (glow animasi) */
+        
+        .test-tube::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 20px;
+            background: radial-gradient(circle at center, rgba(255, 130, 160, 0.7), transparent 70%);
+            filter: blur(10px);
+            animation: reactionGlow 3s infinite ease-in-out;
+        }
+        
+        @keyframes reactionGlow {
+            0%,
+            100% {
+                opacity: 0.5;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+        /* Simulasi percikan kimia */
+        
+        .spark {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 80%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            opacity: 0;
+            animation: sparkFly 2s ease-out infinite;
+        }
+        
+        @keyframes sparkFly {
+            0% {
+                transform: translateY(0) scale(0.8);
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateY(-180px) translateX(40px) scale(0.2);
+                opacity: 0;
+            }
+        }
+        /* Canvas Background */
+        
+        canvas#chemCanvas {
+            width: 100%;
+            height: calc(var(--card-height) - 100px);
+            border-radius: 16px;
+            background: linear-gradient(180deg, rgba(255, 245, 250, 0.9), rgba(255, 230, 240, 0.4));
+            box-shadow: inset 0 1px 8px rgba(255, 180, 200, 0.5), 0 0 40px rgba(255, 150, 180, 0.2);
+            animation: bgChemGlow 8s ease-in-out infinite;
+        }
+        
+        @keyframes bgChemGlow {
+            0%,
+            100% {
+                filter: hue-rotate(0deg);
+            }
+            50% {
+                filter: hue-rotate(45deg);
+            }
+        }
+        /* ============================= */
+        /* 🌍 LABORATORIUM CINTA MAP AREA */
+        /* ============================= */
+        /* 🌈 MAP AREA UPGRADED - LAB CINTA EDITION */
+        
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 420px;
+            border-radius: 24px;
+            overflow: hidden;
+            background: radial-gradient(circle at top left, #fff0f8, #ffe6f3, #ffd9eb);
+            box-shadow: 0 12px 36px rgba(255, 100, 160, 0.25);
+            border: 2px solid rgba(255, 160, 200, 0.6);
+            animation: fadeUp 1.2s ease forwards;
+        }
+        /* peta leaflet */
+        
+        #map,
+        .leaflet-container {
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: inherit;
+            display: block;
+            filter: saturate(1.1) brightness(1.05);
+            transition: 0.4s ease;
+        }
+        /* efek hover: lembut dan glowing */
+        
+        .map-container:hover {
+            transform: scale(1.01);
+            box-shadow: 0 15px 50px rgba(255, 120, 190, 0.35);
+            border-color: rgba(255, 100, 180, 0.9);
+        }
+        /* ===== Efek Gelembung Kimia ===== */
+        
+        .bubble {
+            position: absolute;
+            bottom: -20px;
+            background: rgba(255, 160, 200, 0.7);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: floatUp 6s infinite ease-in;
+        }
+        
+        .bubble:nth-child(1) {
+            width: 14px;
+            height: 14px;
+            left: 15%;
+            animation-delay: 1s;
+        }
+        
+        .bubble:nth-child(2) {
+            width: 10px;
+            height: 10px;
+            left: 35%;
+            animation-delay: 2s;
+        }
+        
+        .bubble:nth-child(3) {
+            width: 16px;
+            height: 16px;
+            left: 60%;
+            animation-delay: 3s;
+        }
+        
+        .bubble:nth-child(4) {
+            width: 20px;
+            height: 20px;
+            left: 80%;
+            animation-delay: 4s;
+        }
+        
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0);
+                opacity: 0.7;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-350px);
+                opacity: 0;
+            }
+        }
+        /* Efek partikel hati */
+        
+        .heart {
+            position: absolute;
+            font-size: 18px;
+            opacity: 0;
+            animation: floatHeart 1.8s ease-out forwards;
+            color: #ff4081;
+            text-shadow: 0 0 6px rgba(255, 105, 180, 0.6);
+        }
+        
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(0) scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-80px) scale(1.5);
+                opacity: 0;
+            }
+        }
+        /* Responsif */
+        
+        @media (max-width: 900px) {
+            .map-container {
+                height: 320px;
+                border-radius: 18px;
+            }
+        }
+        
+        @media (max-width: 520px) {
+            .map-container {
+                height: 250px;
+                border-radius: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body data-page="surprise" data-song="assets/music/surprise.mp3" class="romantic">
+
+    <!-- ===== HEADER ===== -->
+    <header class="nav">
+        <div class="brand">Dini🌹</div>
+        <nav class="navlinks">
+            <a href="index.html">Home</a>
+            <a href="timeline.html">Memory</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="surprise.html" class="active">Surprise</a>
+            <a href="guestbook.html">Closing</a>
+        </nav>
+        <div class="right-controls">
+            <div id="count-sm-4" class="count-sm">-- hari --:--:--</div>
+            <button id="playBtn4" class="btn-small">▶️ Play</button>
+            <button id="navToggle4" class="nav-toggle" aria-label="toggle">≡</button>
+        </div>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="page">
+
+        <!-- Puisi -->
+        <section class="card fade-up">
+            <h3>Chemistry x Geomatics 🧪📍</h3>
+            <p class="poem">
+                <p class="poem">
+                    Dini Sayangku,<br> Cintaku padamu seperti reaksi eksoterm selalu menghangatkan setiap detik kebersamaan kita.<br> Energi cintamu mengalir seperti arus ion, menstabilkan segala ketidakpastian di hatiku.<br>
+                    <br> Dalam koordinat hidup yang luas ini,<br> aku memetakannya dan menemukan pusatnya di hatimu.<br> Garis lintang dan bujurku selalu mengarah padamu,<br> seolah bumi pun tahu, bahwa porosku adalah dirimu.<br>
+                    <br> Seperti molekul yang menemukan pasangan sempurna,<br> aku dan kamu adalah sistem yang seimbang.<br> Tak perlu koreksi diferensial,<br> karena setiap sudut pandang selalu berujung pada senyummu.<br>
+                    <br> Kau adalah katalis dari segala bahagiaku,<br> mempercepat reaksi di setiap degup jantungku.<br> Dan bila dunia ini berubah menjadi dingin,<br> biarlah cintaku tetap bereaksi menjaga hangat di hatimu, selamanya terkoordinat dalam
+                    kasih.
+                </p>
+        </section>
+
+        <!-- Laboratorium Cinta -->
+        <section class="lab-card fade-up">
+            <h3>Laboratorium Cinta Kita 🧪</h3>
+            <p>Setiap gelembung dan percikan ini adalah kenangan manis kita ❤️</p>
+            <canvas id="chemCanvas"></canvas>
+
+            <div class="tube-container">
+                <div class="test-tube">
+                    <div class="bubble"></div>
+                    <div class="bubble"></div>
+                    <div class="bubble"></div>
+                </div>
+                <div class="test-tube">
+                    <div class="bubble"></div>
+                    <div class="bubble"></div>
+                    <div class="bubble"></div>
+                </div>
+                <div class="test-tube">
+                    <div class="bubble"></div>
+                    <div class="bubble"></div>
+                    <div class="bubble"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 🌍 Peta Kenangan Kita -->
+        <section class="card fade-up">
+            <h3>Peta Kenangan📍</h3>
+            <p>Di setiap titik ini, ada jejak tentang kita 💞</p>
+
+
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
+        </section>
+
+
+        </section>
+    </main>
+
+    <footer class="foot">
+        Made with ❤️ for Dini | <a href="index.html">Kembali ke Beranda</a>
+    </footer>
+
+    <!-- ===== SCRIPTS ===== -->
+    <!-- load leaflet js -->
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        /* ========== MAP INIT ========== */
+        const map = L.map('map').setView([-7.2575, 112.7521], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        const titikKenangan = [{
+            coords: [-7.2722615364630405, 112.7298782605369],
+            popup: "<b>Rumah Kamu Sayang</b><br>Tempat pertama kali ketemu, dan tempat ternyaman kita mengahabiskan waktu berdua💘"
+        }, {
+            coords: [-7.281552227091907, 112.79504298944245],
+            popup: "<b>Lingpus ITS</b><br>Di sinilah hubungan resmi kita dimulai ❤️"
+        }, {
+            coords: [-7.282557170189142, 112.79294379016365],
+            popup: "<b>Masjid Manarul Ilmi</b><br>First time foto sama kamu, dan tempat sholat kita❤️"
+        }, {
+            coords: [-7.281127623246148, 112.77173728603469],
+            popup: "<b>Mie Gacoan Manyar</b><br>Tempat mam pertama kita setelah aku nembak kamu💖"
+        }, {
+            coords: [-7.288458158763914, 112.77564647278625],
+            popup: "<b>Ultra Gaming</b><br>Yeayy maen game bareng ayanggg🌸"
+        }, {
+            coords: [-7.290818491022602, 112.74040755302472],
+            popup: "<b>Sate Taichan Pahlawan</b><br>Ciee mam sate after kemker bareng ayanggg🍽️❤️"
+        }, {
+            coords: [-7.296143181123983, 112.73668951816855],
+            popup: "<b>Kebun Binatang Surabaya</b><br>Sukaaa dari pagi sampe sore sama sayangkuu cintakuuu❤️"
+        }, {
+            coords: [-7.262283523589947, 112.73920436219683],
+            popup: "<b>Tunjungan Plaza</b><br>Tempat dimana aku memberikan jaket aku sebelum berangkat magang💕"
+        }, {
+            coords: [-7.268816820121743, 112.73854119154284],
+            popup: "<b>CW Coffee</b><br>Tempat kita ketemu juga sebelum pergi magang dan tempat study date kita❤️"
+        }, {
+            coords: [-7.288394547332383, 112.77563655738645],
+            popup: "<b>Kuy Studio</b><br>Foto studio kitaaa sayanggg setelah ldr huhu❤️"
+        }, {
+            coords: [-7.299827785811675, 112.72386209659537],
+            popup: "<b>Kodam</b><br>Cieee akhirnya keturutan jugaa kodam date💕"
+        }, {
+            coords: [-7.329907582740787, 112.71670595294549],
+            popup: "<b>Pondok Pesantren Kota Alif Laam Miim</b><br>Kitaa mengantar adek kamuu buat balik pondok sayangg❤️‍🔥"
+        }, {
+            coords: [-7.315157495051747, 112.73626661458054],
+            popup: "<b>Maspion</b><br>Tempat kita beli laptop buat adek kamuu sayangg❤️"
+        }, {
+            coords: [-7.290849488921827, 112.7368610453689],
+            popup: "<b>Rumah Sakit William Booth Surabaya</b><br>Kita berdua menjenguk ayah kamu, dan aku akan selalu disamping kamu buat nguatin kamuu❤️"
+        }, {
+            coords: [-7.250727386157587, 112.73550142925903],
+            popup: "<b>GNI</b><br>Mengantar ayang buat ngurus beasiswanya, dann aku akan disamping kamu walau keadaan berat❤️"
+        }, {
+            coords: [-7.266862315248479, 112.73570220570726],
+            popup: "<b>DIY</b><br>Tempat kita beli botol minum sama penggaris buat adek kamu sayang, rasanya udah mau belanja buat rumah tangga ya yang? hehe ❤️"
+        }, {
+            coords: [-7.289349319086426, 112.74475509520286],
+            popup: "<b>Gacoan Ngagel</b><br>Ciee gacoan part 2 setelah kita beli laptop buat adek kamuu sayangg❤️"
+        }, {
+            coords: [-7.261888505568152, 112.74999409081333],
+            popup: "<b>Grand City Mall</b><br>Tempat kita nonton first time sayangkuuu❤️"
+        }, {
+            coords: [-7.271481969792835, 112.73505564473645],
+            popup: "<b>Mie Ayam</b><br>Bungkus mie ayam after selesai nonton nyam nyamm❤️"
+        }, {
+            coords: [-7.313984807048531, 112.72613411563147],
+            popup: "<b>Unesa</b><br>Yeayy akhirnya ke Unesa bareng ayangg sambil liatin danau dan mengenang masa maba❤️"
+        }, {
+            coords: [-7.266553899812178, 112.74127416930331],
+            popup: "<b>Bengkel</b><br>Tempat kita servis motornya sayangkuuuuu❤️"
+        }, {
+            coords: [-7.309384235538252, 112.73419179787335],
+            popup: "<b>Royal Plaza</b><br>Ke royal bareng sayangkuu buat ambil uang adekk sekalian lihat lihat skincare adekkk❤️"
+        }, {
+            coords: [-7.27613184178345, 112.73543569019525],
+            popup: "<b>Momoyo Pandegiling</b><br>Akhirnya keturutan mam eskrim bareng ayang meskipun bukan mixue❤️"
+        }, {
+            coords: [-7.27532015773686, 112.73454724345915],
+            popup: "<b>Tempat Cuci Motor</b><br>Cuci motornya sayangkuu cintakuuuu❤️"
+        }, {
+            coords: [-7.273826118248235, 112.7334530496866],
+            popup: "<b>Pentol</b><br>Beli pentol sama sayangkuu nyamm nyamm❤️"
+        }, {
+            coords: [-7.27013510733585, 112.72873556986156],
+            popup: "<b>Indomaret Pasar Kembang</b><br>Tempat kita beli minum biasanya sayangkuuuu❤️"
+        }, {
+            coords: [-7.274395573143718, 112.734655512530081],
+            popup: "<b>Fotocopy Mitra Ilmu</b><br>Cieee print foto apa tuuuu💘"
+        }, {
+            coords: [-7.290292620106272, 112.79561524330151],
+            popup: "<b>Tahu Bulat</b><br>Enak kan sayang tahu bulatnya?? nyamm nyammm❤️"
+
+        }];
+
+        titikKenangan.forEach(item => {
+            const marker = L.marker(item.coords).addTo(map).bindPopup(item.popup);
+
+            // Tambahkan efek hati setiap klik marker 💞
+            marker.on('click', (e) => {
+                const mapContainer = document.querySelector('.map-container');
+                for (let i = 0; i < 5; i++) {
+                    const heart = document.createElement('div');
+                    heart.classList.add('heart');
+                    heart.textContent = '❤️';
+                    heart.style.left = `${e.originalEvent.offsetX + (Math.random() * 40 - 20)}px`;
+                    heart.style.top = `${e.originalEvent.offsetY}px`;
+                    heart.style.animationDelay = `${i * 0.1}s`;
+                    mapContainer.appendChild(heart);
+                    setTimeout(() => heart.remove(), 1800);
+                }
+            });
+        });
+
+
+
+        /* ========== CANVAS PARTICLES ========== */
+        const canvas = document.getElementById('chemCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let cw = 0,
+            ch = 0;
+        const DPR = window.devicePixelRatio || 1;
+
+        function random(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function createParticle() {
+            particles.push({
+                x: random(10, cw - 10),
+                y: ch + random(0, 30),
+                radius: random(3, 7),
+                color: `hsl(${Math.random() * 360},70%,60%)`,
+                speedY: random(0.8, 2.8),
+                speedX: random(-0.6, 0.6)
+            });
+        }
+
+        function updateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (particles.length < 160) createParticle();
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.y -= p.speedY;
+                p.x += p.speedX;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = p.color;
+                ctx.fill();
+                if (p.y + p.radius < -10 || p.x < -20 || p.x > cw + 20) particles.splice(i, 1);
+            }
+            requestAnimationFrame(updateParticles);
+        }
+
+        function fitChemCanvas() {
+            const canvas = document.getElementById('chemCanvas');
+            if (!canvas) return;
+            const DPR = window.devicePixelRatio || 1;
+
+            // dapatkan CSS ukuran saat ini (setelah layout)
+            const cssW = Math.max(100, canvas.clientWidth);
+            const cssH = Math.max(120, canvas.clientHeight);
+
+            // set ukuran pixel internal sesuai DPR
+            canvas.width = Math.floor(cssW * DPR);
+            canvas.height = Math.floor(cssH * DPR);
+
+            // buat transform agar drawing pakai CSS pixels
+            const ctx = canvas.getContext('2d');
+            ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+            // update globals cw/ch kalau dipakai di createParticle()
+            window._cw = cssW;
+            window._ch = cssH;
+        }
+
+        // gunakan _cw/_ch di createParticle/updateParticles (atau set cw/ch global)
+        function createParticle() {
+            const cw = window._cw || canvas.clientWidth;
+            const ch = window._ch || canvas.clientHeight;
+            particles.push({
+                x: random(10, cw - 10),
+                y: ch + random(0, 30),
+                radius: random(3, 7),
+                color: `hsl(${Math.random() * 360},70%,60%)`,
+                speedY: random(0.8, 2.8),
+                speedX: random(-0.6, 0.6)
+            });
+        }
+
+        // saat load & resize: fit canvas lalu invalidatesize map (debounce)
+        function initLayoutFixes() {
+            fitChemCanvas();
+            // jalankan invalidateSize beberapa kali supaya leaflet benar-benar menyesuaikan
+            if (typeof map !== 'undefined') {
+                setTimeout(() => map.invalidateSize(), 250);
+                setTimeout(() => map.invalidateSize(), 600);
+            }
+        }
+
+        window.addEventListener('load', () => {
+            initParticles(); // pastikan partikel diinisialisasi
+            initLayoutFixes();
+        });
+
+        let _resizeTO;
+        window.addEventListener('resize', () => {
+            clearTimeout(_resizeTO);
+            _resizeTO = setTimeout(() => {
+                initParticles(); // recalibrate canvas
+                if (typeof map !== 'undefined') map.invalidateSize();
+            }, 160);
+        });
+
+        function fitChemCanvas() {
+            const cssW = canvas.clientWidth || canvas.offsetWidth || 300;
+            const computed = getComputedStyle(canvas);
+            let cssH = parseFloat(computed.height);
+            if (!cssH || isNaN(cssH)) cssH = 180;
+
+            cw = Math.floor(cssW);
+            ch = Math.floor(cssH);
+
+            canvas.width = Math.floor(cw * DPR);
+            canvas.height = Math.floor(ch * DPR);
+            ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+        }
+
+        function initParticles() {
+            fitChemCanvas();
+            particles = [];
+            if (!window._particlesStarted) {
+                window._particlesStarted = true;
+                updateParticles();
+            }
+        }
+
+        window.addEventListener('load', () => {
+            initParticles();
+            setTimeout(() => map.invalidateSize(), 350);
+        });
+
+        window.addEventListener('resize', () => {
+            initParticles();
+            clearTimeout(window._mapResizeTO);
+            window._mapResizeTO = setTimeout(() => map.invalidateSize(), 150);
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) setTimeout(() => map.invalidateSize(), 200);
+        });
+    </script>
+
+    <audio id="bgm" preload="auto"></audio>
+    <script src="script.js"></script>
+</body>
+
+</html>

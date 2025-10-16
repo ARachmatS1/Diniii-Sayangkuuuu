@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Happy Birthday Sayangku Dini</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ========== THEME & RESET ========== */
+        
+         :root {
+            --bg-1: #fff5f8;
+            --bg-2: #fff0f6;
+            --accent: #ff4d84;
+            --accent-2: #ff97c2;
+            --muted: #6b5860;
+            --glass: rgba(255, 255, 255, 0.9);
+            --card-shadow: 0 18px 48px rgba(60, 20, 30, 0.07);
+            --radius: 16px;
+            --maxw: 1200px;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+        
+        html,
+        body {
+            height: 100%
+        }
+        
+        body {
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            background: radial-gradient(circle at 10% 20%, rgba(255, 230, 242, 0.55), transparent 6%), linear-gradient(180deg, var(--bg-1), var(--bg-2));
+            color: #2b2026;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+        /* ========== LAYOUT ========== */
+        
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 28px;
+        }
+        
+        header.topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 0;
+            position: relative;
+            z-index: 30;
+        }
+        
+        .brand {
+            font-family: 'Playfair Display', serif;
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 20px;
+            letter-spacing: .2px;
+        }
+        
+        .tiny-nav {
+            color: var(--muted);
+            font-size: 14px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .tiny-nav a {
+            text-decoration: none;
+            color: var(--muted);
+            opacity: .9
+        }
+        
+        main.hero {
+            min-height: calc(100vh - 110px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 40px 18px;
+        }
+        /* bokeh & petals overlay */
+        
+        .bokeh {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            filter: blur(12px) saturate(110%);
+        }
+        
+        .petal-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
+        /* central card */
+        
+        .center-card {
+            position: relative;
+            z-index: 12;
+            width: 100%;
+            max-width: 980px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 250, 252, 0.98));
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            padding: 34px;
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 28px;
+            align-items: center;
+            transform: translateY(8px);
+            opacity: 0;
+            transition: transform .9s cubic-bezier(.2, .9, .3, 1), opacity .9s;
+        }
+        
+        body.landing-ready .center-card {
+            transform: none;
+            opacity: 1
+        }
+        /* Left: text */
+        
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 44px;
+            line-height: 1.02;
+            margin-bottom: 10px;
+            color: #3a1f28;
+        }
+        
+        .hero-text p.lead {
+            color: var(--muted);
+            font-size: 17px;
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+        
+        .hero-meta {
+            color: var(--muted);
+            font-size: 14px;
+            margin-top: 6px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        /* Right: image */
+        
+        .hero-media {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .media-img {
+            width: 100%;
+            max-width: 360px;
+            height: 460px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 28px 80px rgba(30, 8, 20, 0.12);
+            transform: translateY(0);
+            transition: transform .9s cubic-bezier(.2, .9, .3, 1);
+        }
+        
+        .media-img:hover {
+            transform: translateY(-8px) rotate(-.6deg)
+        }
+        /* subtle caption */
+        
+        .caption {
+            color: var(--muted);
+            font-size: 14px;
+            text-align: center;
+            margin-top: 6px;
+        }
+        /* decorative dot row */
+        
+        .dot-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+            opacity: .95;
+            box-shadow: 0 6px 16px rgba(255, 120, 160, 0.12)
+        }
+        /* overlay for unmute */
+        
+        .audio-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, rgba(255, 245, 250, 0.8), rgba(255, 240, 246, 0.6));
+            backdrop-filter: blur(6px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .4s;
+        }
+        
+        .audio-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .overlay-box {
+            background: var(--glass);
+            padding: 18px 22px;
+            border-radius: 14px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+        }
+        
+        .overlay-box .heart {
+            font-size: 36px;
+            margin-bottom: 8px
+        }
+        
+        .overlay-box p {
+            margin-top: 6px;
+            color: #5a3b3e;
+            font-weight: 600
+        }
+        /* footer */
+        
+        footer.foot {
+            padding: 20px 0;
+            text-align: center;
+            color: var(--muted);
+            font-size: 15px
+        }
+        /* responsive */
+        
+        @media (max-width:1000px) {
+            .center-card {
+                grid-template-columns: 1fr;
+                padding: 22px;
+                gap: 18px;
+            }
+            .hero-media {
+                order: -1;
+            }
+            .media-img {
+                max-width: 100%;
+                height: 300px
+            }
+            .hero-text h1 {
+                font-size: 34px
+            }
+        }
+        
+        @media (max-width:420px) {
+            .hero-text h1 {
+                font-size: 26px
+            }
+            .hero-text p.lead {
+                font-size: 15px
+            }
+            .center-card {
+                padding: 18px
+            }
+        }
+        /* small util */
+        
+        .visually-hidden {
+            position: absolute !important;
+            height: 1px;
+            width: 1px;
+            overflow: hidden;
+            clip: rect(1px, 1px, 1px, 1px);
+            white-space: nowrap
+        }
+    </style>
+</head>
+
+<body class="romantic">
+
+    <!-- top bar -->
+    <div class="wrap topbar">
+        <header class="topbar">
+            <div class="brand">Dini🌹</div>
+            <nav class="tiny-nav" aria-label="secondary">
+                <a href="timeline.html">Memory</a>
+                <a href="gallery.html">Gallery</a>
+                <a href="surprise.html">Surprise</a>
+                <a href="guestbook.html">Closing</a>
+            </nav>
+        </header>
+    </div>
+
+    <!-- hero -->
+    <main class="hero">
+        <!-- decorative bokeh -->
+        <div class="bokeh" aria-hidden="true"></div>
+
+        <!-- petal & love canvas (full window) -->
+        <canvas id="petalCanvas" class="petal-canvas" aria-hidden="true"></canvas>
+
+        <div class="wrap">
+            <section class="center-card" role="region" aria-labelledby="hero-heading">
+                <!-- left (text) -->
+                <div class="hero-text">
+                    <h1 id="hero-heading">Happy Birthday My Love, Dini 🌹❤️</h1>
+                    <p class="lead">
+                        Hari ini aku susun halaman kecil ini hanya untukmu. Musik, kelopak, dan kata-kata puitis semuanya dari aku untuk kamu. Semoga setiap nada dan setiap kelopak mengingatkanmu bahwa aku selalu memilihmu.
+                    </p>
+
+                    <div style="margin-top:18px">
+                        <div class="dot-row" aria-hidden="true">
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                        </div>
+
+                        <div class="hero-meta" style="margin-top:14px;">
+                            <div>From: <strong>Rachmat</strong></div>
+                            <div style="opacity:.6; margin-left:6px">•</div>
+                            <div style="opacity:.85"><strong>Ciee 20 Tahun</strong></div>
+                            <div style="opacity:.6; margin-left:6px">•</div>
+                            <div style="opacity:.85"><strong>Love You Sayang</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- right (media) -->
+                <aside class="hero-media" aria-hidden="true">
+                    <img id="heroImg" class="media-img" src="assets/images/fotocover.jpg" alt="Foto Dini & Rachmat">
+                    <div class="caption">Sayangkuuu Cintakuuuu Istrikuuuu🌹❤️</div>
+                </aside>
+            </section>
+        </div>
+    </main>
+
+    <!-- overlay (shown if autoplay blocked) -->
+    <div id="audioOverlay" class="audio-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="overlay-box" role="button" tabindex="0">
+            <div class="heart">🌹</div>
+            <p>Tap sekali untuk membuka web ini sayang</p>
+            <div style="font-size:13px;color:var(--muted);margin-top:6px">Private - dari Rachmat</div>
+        </div>
+    </div>
+
+    <!-- footer -->
+    <footer class="foot">
+        Website ini hanya untuk kamu, <strong>Dini</strong> - dari suami kamu, <strong>Rachmat</strong> ❤️
+    </footer>
+
+    <!-- hidden accessible text -->
+    <div class="visually-hidden" aria-live="polite" id="ariaStatus">Selamat ulang tahun, Dini.</div>
+
+    <!-- audio element -->
+    <audio id="bgm" preload="auto" playsinline></audio>
+
+    <!-- inline JS: petals, autoplay best-effort, confetti/hearts helper -->
+    <script>
+        (function() {
+            /* CONFIG */
+            const SONG = document.body.dataset.song || 'assets/music/home.mp3';
+            const TARGET_DATE = new Date(2025, 9, 18, 0, 0, 0); // 18 Okt 2025
+            const bgm = document.getElementById('bgm');
+            bgm.src = SONG;
+            bgm.loop = true;
+            bgm.volume = 0.9;
+            bgm.muted = false;
+            bgm.playsInline = true;
+
+            /* COUNTDOWN (updates aria and potentially next to hero) */
+            function updateCountdown() {
+                const now = new Date();
+                let diff = Math.max(0, TARGET_DATE - now);
+                const days = Math.floor(diff / 86400000);
+                const aria = document.getElementById('ariaStatus');
+                if (aria) {
+                    aria.textContent = (days <= 0) ? 'Hari ini hari ulang tahunmu, Dini.' : `Masih ${days} hari menuju hari ulang tahunmu.`;
+                }
+                // show days number in hero (if exists)
+                const daysEl = document.getElementById('daysLeft');
+                if (daysEl) daysEl.textContent = days;
+            }
+            updateCountdown();
+            setInterval(updateCountdown, 1000 * 60); // update every min (days won't change quickly)
+
+            /* AUTOPLAY BEST-EFFORT:
+               1) try play unmuted
+               2) if blocked, try muted play
+               3) if muted works, show overlay to ask interaction (unmute, fade in)
+            */
+            const overlay = document.getElementById('audioOverlay');
+            async function tryAutoplay() {
+                try {
+                    await bgm.play();
+                    // succeeded
+                    hideOverlay();
+                } catch (e) {
+                    // blocked; try muted
+                    bgm.muted = true;
+                    try {
+                        await bgm.play();
+                        // muted autoplay OK: show overlay to request unmute
+                        showOverlay();
+                        attachUnmuteOnInteraction(bgm);
+                    } catch (e2) {
+                        // even muted blocked (rare) -> show overlay
+                        showOverlay();
+                        attachUnmuteOnInteraction(bgm, true);
+                    }
+                }
+            }
+
+            function showOverlay() {
+                overlay.classList.add('show');
+                overlay.setAttribute('aria-hidden', 'false');
+            }
+
+            function hideOverlay() {
+                overlay.classList.remove('show');
+                overlay.setAttribute('aria-hidden', 'true');
+            }
+
+            function attachUnmuteOnInteraction(audio, requirePlay = false) {
+                // fade-in volume
+                function fadeIn() {
+                    audio.muted = false;
+                    let v = 0.0;
+                    audio.volume = 0;
+                    const target = 0.9;
+                    const step = 0.06;
+                    const iv = setInterval(() => {
+                        v += step;
+                        if (v >= target) {
+                            audio.volume = target;
+                            clearInterval(iv);
+                        } else audio.volume = v;
+                    }, 120);
+                }
+                const handler = async function() {
+                    try {
+                        if (requirePlay && audio.paused) await audio.play();
+                        fadeIn();
+                    } catch (e) { /* ignore */ }
+                    hideOverlay();
+                    // cleanup listeners
+                    ['click', 'touchstart', 'keydown', 'scroll'].forEach(ev => document.removeEventListener(ev, handler));
+                };
+                ['click', 'touchstart', 'keydown', 'scroll'].forEach(ev => document.addEventListener(ev, handler, {
+                    once: true,
+                    passive: true
+                }));
+            }
+
+            // overlay click also triggers unmute attempt and a little confetti/hearts
+            overlay.addEventListener('click', function() {
+                // dispatch user interaction to trigger attached handler
+                const ev = new Event('click');
+                document.dispatchEvent(ev);
+                if (typeof launchConfetti === 'function') launchConfetti(80);
+                if (typeof launchHearts === 'function') launchHearts(60);
+            });
+
+            // attempt autoplay on load
+            document.addEventListener('DOMContentLoaded', tryAutoplay);
+
+            /* PETALS / LOVE RAIN using canvas */
+            const canvas = document.getElementById('petalCanvas');
+            const ctx = canvas.getContext('2d');
+            let W = window.innerWidth,
+                H = window.innerHeight;
+
+            function resize() {
+                W = canvas.width = window.innerWidth;
+                H = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            function rand(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            // represent element (petal or heart)
+            class Particle {
+                constructor() {
+                    this.reset(true);
+                }
+                reset(init = false) {
+                    this.x = rand(0, W);
+                    this.y = init ? rand(-H, H) : rand(-80, -20);
+                    this.size = rand(20, 44);
+                    this.speed = rand(0.6, 2.2);
+                    this.drift = rand(-0.6, 0.6);
+                    this.rot = rand(0, Math.PI * 2);
+                    this.rotSpeed = rand(-0.02, 0.02);
+                    this.type = Math.random() > 0.55 ? 'rose' : 'love';
+                    // color subtly variant
+                    this.opacity = rand(0.7, 1);
+                }
+                update() {
+                    this.y += this.speed;
+                    this.x += this.drift;
+                    this.rot += this.rotSpeed;
+                    if (this.y > H + 60 || this.x < -60 || this.x > W + 60) this.reset();
+                }
+                draw(ctx) {
+                    ctx.save();
+                    ctx.globalAlpha = this.opacity;
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.rot);
+                    ctx.font = (this.size | 0) + 'px serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    const char = this.type === 'rose' ? '🌹' : '❤️';
+                    ctx.fillText(char, 0, 0);
+                    ctx.restore();
+                }
+            }
+
+            const particles = [];
+            const PARTICLE_COUNT = Math.min(120, Math.floor((W * H) / 15000)); // scale with screen
+            for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+
+            function tick() {
+                ctx.clearRect(0, 0, W, H);
+                for (const p of particles) {
+                    p.update();
+                    p.draw(ctx);
+                }
+                requestAnimationFrame(tick);
+            }
+            tick();
+
+            /* small confetti/hearts generator (DOM-based for layering) */
+            function ensureRoots() {
+                if (!document.getElementById('__confetti_root')) {
+                    const r = document.createElement('div');
+                    r.id = '__confetti_root';
+                    document.body.appendChild(r);
+                    r.style.position = 'fixed';
+                    r.style.inset = '0';
+                    r.style.pointerEvents = 'none';
+                    r.style.zIndex = '150';
+                }
+                if (!document.getElementById('__heart_root')) {
+                    const r = document.createElement('div');
+                    r.id = '__heart_root';
+                    document.body.appendChild(r);
+                    r.style.position = 'fixed';
+                    r.style.inset = '0';
+                    r.style.pointerEvents = 'none';
+                    r.style.zIndex = '149';
+                }
+            }
+
+            window.launchConfetti = function(count = 60) {
+                ensureRoots();
+                const root = document.getElementById('__confetti_root');
+                for (let i = 0; i < count; i++) {
+                    const el = document.createElement('div');
+                    const w = Math.floor(rand(6, 18));
+                    el.style.width = w + 'px';
+                    el.style.height = Math.floor(rand(8, 24)) + 'px';
+                    el.style.background = ['#ff9dbb', '#ffd6e8', '#ffb3c9', '#ffd1e6'][Math.floor(rand(0, 4))];
+                    el.style.position = 'absolute';
+                    el.style.left = rand(0, 100) + '%';
+                    el.style.top = '-10%';
+                    el.style.opacity = '0.96';
+                    el.style.transform = 'rotate(' + rand(0, 360) + 'deg)';
+                    el.style.borderRadius = '3px';
+                    el.style.pointerEvents = 'none';
+                    root.appendChild(el);
+                    // animate
+                    const endLeft = rand(-10, 110) + '%';
+                    el.animate([{
+                        transform: `translateY(0) rotate(0)`,
+                        top: '-10%',
+                        left: el.style.left
+                    }, {
+                        transform: `translateY(${rand(90,140)}vh) rotate(${rand(360,900)}deg)`,
+                        top: '110%',
+                        left: endLeft,
+                        opacity: 0
+                    }], {
+                        duration: rand(2400, 4200),
+                        easing: 'linear'
+                    });
+                    setTimeout(() => el.remove(), 4600);
+                }
+            };
+
+            window.launchHearts = function(count = 30) {
+                ensureRoots();
+                const root = document.getElementById('__heart_root');
+                for (let i = 0; i < count; i++) {
+                    const h = document.createElement('div');
+                    const size = Math.floor(rand(18, 44));
+                    h.textContent = '💗';
+                    h.style.position = 'absolute';
+                    h.style.left = rand(10, 90) + '%';
+                    h.style.top = '-8%';
+                    h.style.fontSize = size + 'px';
+                    h.style.opacity = '0.95';
+                    h.style.pointerEvents = 'none';
+                    root.appendChild(h);
+                    h.animate([{
+                        transform: 'translateY(0) translateX(0) rotate(0)',
+                        opacity: 1
+                    }, {
+                        transform: `translateY(${rand(70,130)}vh) translateX(${rand(-20,20)}vw) rotate(${rand(90,720)}deg)`,
+                        opacity: 0
+                    }], {
+                        duration: rand(3200, 5600),
+                        easing: 'cubic-bezier(.2,.7,.2,1)'
+                    });
+                    setTimeout(() => h.remove(), 6000);
+                }
+            };
+
+            // gentle auto celebration on load (not too heavy)
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(() => {
+                    launchHearts(18);
+                    launchConfetti(24);
+                }, 900);
+                // make card entrance feel nice
+                setTimeout(() => document.body.classList.add('landing-ready'), 120);
+            });
+
+            /* allow user to tap anywhere to trigger confetti & hearts (and also attempt unmute) */
+            document.addEventListener('click', (e) => {
+                // if overlay visible, clicking will be handled by overlay listener; else small playful burst
+                if (overlay.classList.contains('show')) return;
+                launchHearts(8);
+                launchConfetti(14);
+            });
+
+            /* Accessibility: keyboard focus for overlay box */
+            const overlayBox = document.querySelector('.overlay-box');
+            if (overlayBox) {
+                overlayBox.addEventListener('keydown', (ev) => {
+                    if (ev.key === 'Enter' || ev.key === ' ') {
+                        ev.preventDefault();
+                        document.dispatchEvent(new Event('click'));
+                    }
+                });
+            }
+
+            /* small safety: stop particles when tab not visible */
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    // pause canvas by skipping frames
+                }
+            });
+
+        })();
+    </script>
+
+    <!-- AUDIO CONTROL & AUTOPLAY HANDLER (separate scope for clarity) -->
+    <script>
+        (function() {
+            const bgm = document.getElementById('bgm');
+            const overlay = document.getElementById('audioOverlay');
+
+            // helper to show overlay
+            function showOverlay() {
+                overlay.classList.add('show');
+                overlay.setAttribute('aria-hidden', 'false');
+                overlay.querySelector('.overlay-box').focus();
+            }
+
+            function hideOverlay() {
+                overlay.classList.remove('show');
+                overlay.setAttribute('aria-hidden', 'true');
+            }
+
+            // try autoplay immediate
+            async function initAudio() {
+                try {
+                    await bgm.play();
+                    // success
+                    hideOverlay();
+                } catch (e) {
+                    // try muted autoplay
+                    bgm.muted = true;
+                    try {
+                        await bgm.play();
+                        // show overlay to ask for unmute
+                        showOverlay();
+                        attachUnmute();
+                    } catch (e2) {
+                        // show overlay anyway
+                        showOverlay();
+                        attachUnmute(true);
+                    }
+                }
+            }
+
+            function attachUnmute(requirePlay = false) {
+                // on first meaningful interaction, unmute with fade
+                const handler = async function() {
+                    try {
+                        if (requirePlay && bgm.paused) await bgm.play();
+                        // fade-in
+                        bgm.muted = false;
+                        let vol = 0;
+                        bgm.volume = 0;
+                        const step = 0.06;
+                        const iv = setInterval(() => {
+                            vol += step;
+                            if (vol >= 0.9) {
+                                bgm.volume = 0.9;
+                                clearInterval(iv);
+                            } else bgm.volume = vol;
+                        }, 120);
+                    } catch (e) {}
+                    hideOverlay();
+                    ['click', 'touchstart', 'keydown', 'scroll'].forEach(ev => document.removeEventListener(ev, handler));
+                };
+                ['click', 'touchstart', 'keydown', 'scroll'].forEach(ev => document.addEventListener(ev, handler, {
+                    once: true,
+                    passive: true
+                }));
+            }
+
+            // overlay box click focuses and triggers user-event
+            overlay.addEventListener('click', (e) => {
+                // dispatch a click to trigger attached unmute handler
+                document.dispatchEvent(new Event('click'));
+                // small celebratory effects
+                if (typeof launchConfetti === 'function') launchConfetti(80);
+                if (typeof launchHearts === 'function') launchHearts(60);
+            });
+
+            // start audio attempt on DOM ready
+            document.addEventListener('DOMContentLoaded', initAudio);
+        })();
+    </script>
+</body>
+
+</html>

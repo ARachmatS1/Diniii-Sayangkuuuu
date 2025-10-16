@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Galeri Sayangku Dini💖</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+            body {
+            background: linear-gradient(to bottom right, #ffe4ec, #fff0f5);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .page-title {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            color: #d63384;
+            font-size: 2.5rem;
+            margin-top: 30px;
+            letter-spacing: 1px;
+        }
+        
+        .muted {
+            text-align: center;
+            color: #7f5a70;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            padding: 0 12px 40px 12px;
+            box-sizing: border-box;
+            max-width: 100%;
+            margin: 0 auto;
+            height: auto;
+            /* biar tinggi menyesuaikan isi */
+            overflow: visible;
+            /* biar ga kepotong */
+            .gitem {
+                position: relative;
+                overflow: hidden;
+                border-radius: 18px;
+                cursor: pointer;
+                box-shadow: 0 10px 30px rgba(220, 50, 120, 0.15);
+                transition: transform 0.4s ease, box-shadow 0.4s ease;
+            }
+            .gitem:hover {
+                transform: scale(1.08);
+                box-shadow: 0 16px 50px rgba(220, 50, 120, 0.35);
+            }
+            .gitem img {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+                display: block;
+            }
+            #lightbox {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(50, 10, 30, 0.95);
+                display: none;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                z-index: 9999;
+                padding: 20px;
+            }
+            #lightbox img {
+                max-width: 90%;
+                max-height: 75%;
+                border-radius: 20px;
+                margin-bottom: 18px;
+                box-shadow: 0 20px 60px rgba(230, 80, 140, 0.5);
+            }
+            #lbCap {
+                color: #ffc0dd;
+                font-style: italic;
+                text-align: center;
+                max-width: 90%;
+                font-size: 1.15rem;
+                line-height: 1.5;
+            }
+            #lbClose {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                font-size: 36px;
+                color: #fff0f4;
+                background: transparent;
+                border: none;
+                cursor: pointer;
+            }
+            @media(max-width:600px) {
+                .gitem img {
+                    height: 150px;
+                }
+                .page-title {
+                    font-size: 2rem;
+                }
+            }
+    </style>
+</head>
+
+<body data-page="gallery" data-song="assets/music/gallery.mp3" class="romantic">
+    <header class="nav">
+        <div class="brand">Dini🌹</div>
+        <nav class="navlinks">
+            <a href="index.html">Home</a>
+            <a href="timeline.html">Memory</a>
+            <a href="gallery.html" class="active">Gallery</a>
+            <a href="surprise.html">Surprise</a>
+            <a href="guestbook.html">Closing</a>
+        </nav>
+        <div class="right-controls">
+            <div id="count-sm-3" class="count-sm">-- hari --:--:--</div>
+            <button id="playBtn2" class="btn-small">▶️ Play</button>
+        </div>
+    </header>
+
+    <main class="page container">
+        <h2 class="page-title">Galeri Dini 💕</h2>
+        <p class="muted">Galeri ini untukmu, Dini. Karena melihatmu saja sudah cukup membuat dunia terasa lebih indah.</p>
+
+        <div class="gallery-grid" id="galleryGrid">
+            <div class="gitem"><img src="assets/images/fotod2.jpg" alt="foto1" data-caption="Utuututuuu imuttt bangettt cii sayangg"></div>
+            <div class="gitem"><img src="assets/images/fotod3.jpg" alt="foto2" data-caption="Haii adek manisss"></div>
+            <div class="gitem"><img src="assets/images/fotod4.jpg" alt="foto3" data-caption="veronica, 19, surabaya"></div>
+            <div class="gitem"><img src="assets/images/fotod5.jpg" alt="foto4" data-caption="Cieeee bunga dari siapa tuuu sayanggg"></div>
+            <div class="gitem"><img src="assets/images/fotod6.jpg" alt="foto5" data-caption="Fotoin cantiknyaaa akuuuu"></div>
+            <div class="gitem"><img src="assets/images/fotod7.jpg" alt="foto6" data-caption="Sayanggg kamuu lohh cuantikkk manisss imutttt"></div>
+            <div class="gitem"><img src="assets/images/fotod8.jpg" alt="foto7" data-caption="Cieee awal psm cieee"></div>
+            <div class="gitem"><img src="assets/images/fotod9.jpg" alt="foto8" data-caption="Sinii siniii sayangg aku imam in kamuuuu"></div>
+            <div class="gitem"><img src="assets/images/fotod10.jpg" alt="foto9" data-caption="Ututututuuu cayangkuuuu cintakuuuu"></div>
+            <div class="gitem"><img src="assets/images/fotod11.jpg" alt="foto10" data-caption="Sayangggg, love you"></div>
+            <div class="gitem"><img src="assets/images/fotod12.jpg" alt="foto11" data-caption="Jakett siapaa tuuu"></div>
+            <div class="gitem"><img src="assets/images/fotod13.jpg" alt="foto12" data-caption="Hummmm nyamm nyammm nyammmm"></div>
+            <div class="gitem"><img src="assets/images/fotod14.jpg" alt="foto13" data-caption="Ayok yangg nikahhh yokkk"></div>
+            <div class="gitem"><img src="assets/images/fotod15.jpg" alt="foto14" data-caption="Anjayy cantiknyaaa akuuu"></div>
+            <div class="gitem"><img src="assets/images/fotod1.jpg" alt="foto15" data-caption="Punya aku selamanyaa"></div>
+
+        </div>
+    </main>
+
+    <div id="lightbox" class="lightbox" aria-hidden="true">
+        <button id="lbClose">✖</button>
+        <img id="lbImg" src="" alt="">
+        <div id="lbCap" class="muted"></div>
+    </div>
+
+    <audio id="bgm" autoplay loop preload="auto"></audio>
+
+    <script>
+        // Lightbox
+        const gallery = document.querySelectorAll('.gitem img');
+        const lightbox = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lbImg');
+        const lbCap = document.getElementById('lbCap');
+        const lbClose = document.getElementById('lbClose');
+
+        gallery.forEach(img => {
+            img.addEventListener('click', () => {
+                lbImg.src = img.src;
+                lbCap.textContent = img.dataset.caption;
+                lightbox.style.display = 'flex';
+            });
+        });
+
+        lbClose.addEventListener('click', () => {
+            lightbox.style.display = 'none';
+        });
+        lightbox.addEventListener('click', e => {
+            if (e.target === lightbox) lightbox.style.display = 'none';
+        });
+
+        // Music autoplay
+        const bgm = document.getElementById('bgm');
+        const pageSong = document.body.dataset.song;
+        bgm.src = pageSong;
+        bgm.volume = 0.6;
+    </script>
+    <footer class="foot">
+        Made with ❤️ for Dini | <a href="index.html">Kembali ke Beranda</a>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
